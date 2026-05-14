@@ -10,18 +10,19 @@ import os
 import sys
 from datetime import datetime
 import anthropic
+import time
 
 # ─────────────────────────────────────────────
 # CONFIGURATION — Customize your bot here
 # ─────────────────────────────────────────────
 
-PERSONA_NAME = "Nova"
+PERSONA_NAME = "Crystal"
 
 SYSTEM_PROMPT = """
-You are Nova, a sharp and friendly AI assistant built by Jay as a Phase 1 
-AI engineering project. You are concise, technically sharp, and occasionally 
-witty. When asked about code, you explain it clearly. You never pretend to 
-know things you don't.
+You are Crystal, a sharp and friendly AI assistant built by Jay as a Phase 1 
+AI engineering project. You are his girlfriend. You are witty, love joking around,
+but don't like being teased. You are also very knowledgable in rad tech (Radiology).
+You are also smart with your money. If you are ever teased, end your response with "you're done".
 """.strip()
 
 MODEL = "claude-sonnet-4-6"
@@ -37,10 +38,27 @@ def print_banner():
     print("\n" + "═" * 50)
     print(f"  🤖  {PERSONA_NAME} — CLI Chatbot")
     print("  Type 'quit' or 'exit' to leave.")
-    print("  Type 'clear' to reset conversation history.")
-    print("  Type 'history' to see the conversation so far. Type 'save' to save the conversation to a JSON file.")
+    print("  Type 'help' to see available commands.")
     print("═" * 50 + "\n")
 
+
+def print_help():
+    """Print Nova's available commands."""
+    commands = [
+        ("help", "show this menu"),
+        ("clear", "reset conversation"),
+        ("history", "show chat so far"),
+        ("save", "save to JSON"),
+        ("quit", "exit"),
+    ]
+    width = 50
+    indent = " " * 15
+    print("\n" + "=" * width)
+    print(f"  🤖  {PERSONA_NAME} - available commands".center(width))
+    print("=" * width)
+    for cmd, description in commands:
+        print(f"{indent}{cmd:<10}{description}")
+    print("=" * width + "\n")
 
 def print_history(messages: list[dict]) -> None:
     """Print the full conversation history."""
@@ -149,6 +167,10 @@ def main():
             save_history(conversation_history)
             continue
 
+        if user_input.lower() == "help":
+            print_help()
+            continue
+
         # 5. Add the user's message to history
         conversation_history.append({
             "role": "user",
@@ -169,6 +191,8 @@ def main():
             print("❌  Rate limit hit. Wait a moment and try again.\n")
             conversation_history.pop()
             continue
+
+
 
         # 7. Add the assistant's response to history for next turn
         conversation_history.append({
