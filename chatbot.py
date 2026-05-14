@@ -5,8 +5,10 @@ Uses the Anthropic API with streaming, conversation history, and a custom person
 from dotenv import load_dotenv
 load_dotenv()
 
+import json
 import os
 import sys
+from datetime import datetime
 import anthropic
 
 # ─────────────────────────────────────────────
@@ -36,7 +38,7 @@ def print_banner():
     print(f"  🤖  {PERSONA_NAME} — CLI Chatbot")
     print("  Type 'quit' or 'exit' to leave.")
     print("  Type 'clear' to reset conversation history.")
-    print("  Type 'history' to see the conversation so far.")
+    print("  Type 'history' to see the conversation so far. Type 'save' to save the conversation to a JSON file.")
     print("═" * 50 + "\n")
 
 
@@ -50,6 +52,18 @@ def print_history(messages: list[dict]) -> None:
         role = "You" if msg["role"] == "user" else PERSONA_NAME
         print(f"  [{role}] {msg['content']}")
     print("─" * 40 + "\n")
+
+
+def save_history(messages: list[dict]) -> None:
+    """Save conversation history to a timestamped JSON file."""
+    if not messages:
+        print("  [Nothing to save — conversation is empty.]\n")
+        return
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"nova_chat_{timestamp}.json"
+    with open(filename, "w", encoding="utf-8") as f:
+        json.dump({"conversation": messages}, f, indent=2, ensure_ascii=False)
+    print(f"  [Conversation saved to {filename}]\n")
 
 
 def stream_response(client: anthropic.Anthropic, messages: list[dict]) -> str:
@@ -129,6 +143,10 @@ def main():
 
         if user_input.lower() == "history":
             print_history(conversation_history)
+            continue
+
+        if user_input.lower() == "save":
+            save_history(conversation_history)
             continue
 
         # 5. Add the user's message to history
