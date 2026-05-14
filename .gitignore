@@ -1,0 +1,24 @@
+# Python virtual environment — never commit this
+venv/
+.venv/
+env/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment variable files — NEVER commit API keys
+.env
+.env.local
+.env.*
+
+# OS clutter
+.DS_Store
+Thumbs.db
+
+# Editor configs
+.vscode/
+.idea/
+*.swp
